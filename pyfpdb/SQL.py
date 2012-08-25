@@ -126,7 +126,7 @@ class Sql:
             self.query['createRawHands'] = """CREATE TABLE RawHands (
                         id BIGINT UNSIGNED AUTO_INCREMENT NOT NULL, PRIMARY KEY (id),
                         handId BIGINT NOT NULL,
-                        rawHand TEXT NOT NULL,
+                        rawHand BLOB NOT NULL,
                         complain BOOLEAN NOT NULL DEFAULT FALSE)
                         ENGINE=INNODB"""
         elif db_server == 'postgresql':
