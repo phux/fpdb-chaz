@@ -725,8 +725,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance BOOLEAN,
                         street0VPI BOOLEAN,
+                        street0AggrChance BOOLEAN,
                         street0Aggr BOOLEAN,
                         street0CalledRaiseChance TINYINT,
                         street0CalledRaiseDone TINYINT,
@@ -873,7 +875,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
 
+                        street0VPIChance BOOLEAN,
                         street0VPI BOOLEAN,
+                        street0AggrChance BOOLEAN,
                         street0Aggr BOOLEAN,
                         street0CalledRaiseChance SMALLINT,
                         street0CalledRaiseDone SMALLINT,
@@ -1018,8 +1022,10 @@ class Sql:
                         wonWhenSeenStreet3 REAL,
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1331,8 +1337,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1446,8 +1454,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1558,8 +1568,10 @@ class Sql:
                         wonWhenSeenStreet3 REAL,
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1676,8 +1688,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1697,7 +1711,6 @@ class Sql:
                         raiseToStealChance INT,
                         raiseToStealDone INT,
                         success_Steal INT,
-
 
                         street1Seen INT,
                         street2Seen INT,
@@ -1799,8 +1812,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -1919,8 +1934,10 @@ class Sql:
                         wonWhenSeenStreet3 REAL,
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2045,8 +2062,10 @@ class Sql:
                         wonWhenSeenStreet3 FLOAT,
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
-
+                        
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2170,7 +2189,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
 
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2291,7 +2312,9 @@ class Sql:
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
 
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2493,7 +2516,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
                         
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2615,7 +2640,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
                         
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2735,7 +2762,9 @@ class Sql:
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
 
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2859,7 +2888,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
                         
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -2981,7 +3012,9 @@ class Sql:
                         wonWhenSeenStreet4 FLOAT,
                         wonAtSD FLOAT,
                         
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -3101,7 +3134,9 @@ class Sql:
                         wonWhenSeenStreet4 REAL,
                         wonAtSD REAL,
 
+                        street0VPIChance INT,
                         street0VPI INT,
+                        street0AggrChance INT,
                         street0Aggr INT,
                         street0CalledRaiseChance INT,
                         street0CalledRaiseDone INT,
@@ -5764,7 +5799,9 @@ class Sql:
                 ,wonWhenSeenStreet3
                 ,wonWhenSeenStreet4
                 ,wonAtSD
+                ,street0VPIChance
                 ,street0VPI
+                ,street0AggrChance
                 ,street0Aggr
                 ,street0CalledRaiseChance
                 ,street0CalledRaiseDone
@@ -5862,7 +5899,9 @@ class Sql:
                       ,sum(wonWhenSeenStreet3)
                       ,sum(wonWhenSeenStreet4)
                       ,sum(wonAtSD)
+                      ,sum(street0VPIChance)
                       ,sum(street0VPI)
+                      ,sum(street0AggrChance)
                       ,sum(street0Aggr)
                       ,sum(street0CalledRaiseChance)
                       ,sum(street0CalledRaiseDone)
@@ -5973,7 +6012,9 @@ class Sql:
                 ,wonWhenSeenStreet3
                 ,wonWhenSeenStreet4
                 ,wonAtSD
+                ,street0VPIChance
                 ,street0VPI
+                ,street0AggrChance
                 ,street0Aggr
                 ,street0CalledRaiseChance
                 ,street0CalledRaiseDone
@@ -6071,7 +6112,9 @@ class Sql:
                       ,sum(wonWhenSeenStreet3)
                       ,sum(wonWhenSeenStreet4)
                       ,sum(wonAtSD)
+                      ,sum(CAST(street0VPIChance as integer))
                       ,sum(CAST(street0VPI as integer))
+                      ,sum(CAST(street0AggrChance as integer))
                       ,sum(CAST(street0Aggr as integer))
                       ,sum(CAST(street0CalledRaiseChance as integer))
                       ,sum(CAST(street0CalledRaiseDone as integer))
@@ -6182,7 +6225,9 @@ class Sql:
                 ,wonWhenSeenStreet3
                 ,wonWhenSeenStreet4
                 ,wonAtSD
+                ,street0VPIChance
                 ,street0VPI
+                ,street0AggrChance
                 ,street0Aggr
                 ,street0CalledRaiseChance
                 ,street0CalledRaiseDone
@@ -6280,7 +6325,9 @@ class Sql:
                       ,sum(wonWhenSeenStreet3)
                       ,sum(wonWhenSeenStreet4)
                       ,sum(wonAtSD)
+                      ,sum(CAST(street0VPIChance as integer))
                       ,sum(CAST(street0VPI as integer))
+                      ,sum(CAST(street0AggrChance as integer))
                       ,sum(CAST(street0Aggr as integer))
                       ,sum(CAST(street0CalledRaiseChance as integer))
                       ,sum(CAST(street0CalledRaiseDone as integer))
@@ -6386,7 +6433,9 @@ class Sql:
                 tourneyTypeId,
                 styleKey,
                 HDs,
+                street0VPIChance,
                 street0VPI,
+                street0AggrChance,
                 street0Aggr,
                 street0CalledRaiseChance,
                 street0CalledRaiseDone,
@@ -6495,12 +6544,14 @@ class Sql:
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s)"""
+                    %s, %s, %s, %s)"""
 
         self.query['update_hudcache'] = """
             UPDATE HudCache SET
             HDs=HDs+%s,
+            street0VPIChance=street0VPIChance+%s,
             street0VPI=street0VPI+%s,
+            street0AggrChance=street0AggrChance+%s,
             street0Aggr=street0Aggr+%s,
             street0CalledRaiseChance=street0CalledRaiseChance+%s,
             street0CalledRaiseDone=street0CalledRaiseDone+%s,
@@ -6617,7 +6668,9 @@ class Sql:
                 startCards,
                 hands,
                 played,
+                street0VPIChance,
                 street0VPI,
+                street0AggrChance,
                 street0Aggr,
                 street0CalledRaiseChance,
                 street0CalledRaiseDone,
@@ -6734,14 +6787,17 @@ class Sql:
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s, %s
+                    %s, %s, %s, %s, %s,
+                    %s, %s
                     )"""
 
         self.query['update_cardscache'] = """
             UPDATE CardsCache SET
                     hands=hands+%s,
                     played=played+%s,
+                    street0VPIChance=street0VPIChance+%s,
                     street0VPI=street0VPI+%s,
+                    street0AggrChance=street0AggrChance+%s,
                     street0Aggr=street0Aggr+%s,
                     street0CalledRaiseChance=street0CalledRaiseChance+%s,
                     street0CalledRaiseDone=street0CalledRaiseDone+%s,
@@ -6873,7 +6929,9 @@ class Sql:
                 position,
                 hands,
                 played,
+                street0VPIChance,
                 street0VPI,
+                street0AggrChance,
                 street0Aggr,
                 street0CalledRaiseChance,
                 street0CalledRaiseDone,
@@ -6991,14 +7049,16 @@ class Sql:
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s
+                    %s, %s, %s
                     )"""
 
         self.query['update_positionscache'] = """
             UPDATE PositionsCache SET
                     hands=hands+%s,
                     played=played+%s,
+                    street0VPIChance=street0VPIChance+%s,
                     street0VPI=street0VPI+%s,
+                    street0AggrChance=street0AggrChance+%s,
                     street0Aggr=street0Aggr+%s,
                     street0CalledRaiseChance=street0CalledRaiseChance+%s,
                     street0CalledRaiseDone=street0CalledRaiseDone+%s,
@@ -7192,7 +7252,9 @@ class Sql:
                     endTime,
                     hands,
                     played,
+                    street0VPIChance,
                     street0VPI,
+                    street0AggrChance,
                     street0Aggr,
                     street0CalledRaiseChance,
                     street0CalledRaiseDone,
@@ -7332,7 +7394,9 @@ class Sql:
                     playerId,
                     hands,
                     played,
+                    street0VPIChance,
                     street0VPI,
+                    street0AggrChance,
                     street0Aggr,
                     street0CalledRaiseChance,
                     street0CalledRaiseDone,
@@ -7450,7 +7514,8 @@ class Sql:
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
-                            %s, %s, %s, %s)"""
+                            %s, %s, %s, %s, %s,
+                            %s)"""
                             
         self.query['insert_TC'] = """
                     insert into TourCache (
@@ -7461,7 +7526,9 @@ class Sql:
                     playerId,
                     hands,    
                     played,
+                    street0VPIChance,
                     street0VPI,
+                    street0AggrChance,
                     street0Aggr,
                     street0CalledRaiseChance,
                     street0CalledRaiseDone,
@@ -7579,7 +7646,8 @@ class Sql:
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
                             %s, %s, %s, %s, %s,
-                            %s, %s, %s, %s)"""
+                            %s, %s, %s, %s, %s,
+                            %s)"""
                     
         ####################################
         # update
@@ -7605,7 +7673,9 @@ class Sql:
                     endTime=%s,
                     hands=hands+%s,
                     played=played+%s,
+                    street0VPIChance=street0VPIChance+%s,
                     street0VPI=street0VPI+%s,
+                    street0AggrChance=street0AggrChance+%s,
                     street0Aggr=street0Aggr+%s,
                     street0CalledRaiseChance=street0CalledRaiseChance+%s,
                     street0CalledRaiseDone=street0CalledRaiseDone+%s,
@@ -7709,7 +7779,9 @@ class Sql:
                     <UPDATE>
                     hands=hands+%s,
                     played=played+%s,
+                    street0VPIChance=street0VPIChance+%s,
                     street0VPI=street0VPI+%s,
+                    street0AggrChance=street0AggrChance+%s,
                     street0Aggr=street0Aggr+%s,
                     street0CalledRaiseChance=street0CalledRaiseChance+%s,
                     street0CalledRaiseDone=street0CalledRaiseDone+%s,
@@ -8194,6 +8266,7 @@ class Sql:
                 rakeWeighted,
                 totalProfit,
                 allInEV,
+                street0VPIChance,
                 street0VPI,
                 street1Seen,
                 street2Seen,
@@ -8202,6 +8275,7 @@ class Sql:
                 sawShowdown,
                 showed,
                 wonAtSD,
+                street0AggrChance,
                 street0Aggr,
                 street1Aggr,
                 street2Aggr,
@@ -8312,7 +8386,8 @@ class Sql:
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
                     %s, %s, %s, %s, %s,
-                    %s, %s, %s, %s
+                    %s, %s, %s, %s, %s,
+                    %s
                 )"""
 
         self.query['store_hands_actions'] = """insert into HandsActions (

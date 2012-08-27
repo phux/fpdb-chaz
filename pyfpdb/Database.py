@@ -78,7 +78,7 @@ except ImportError:
     use_numpy = False
 
 
-DB_VERSION = 175
+DB_VERSION = 176
 
 
 # Variance created as sqlite has a bunch of undefined aggregate functions.
@@ -132,6 +132,7 @@ HANDS_PLAYERS_KEYS = [
     'rakeWeighted',
     'totalProfit',
     'allInEV',
+    'street0VPIChance',
     'street0VPI',
     'street1Seen',
     'street2Seen',
@@ -140,6 +141,7 @@ HANDS_PLAYERS_KEYS = [
     'sawShowdown',
     'showed',
     'wonAtSD',
+    'street0AggrChance',
     'street0Aggr',
     'street1Aggr',
     'street2Aggr',
@@ -233,7 +235,9 @@ HANDS_PLAYERS_KEYS.reverse()
 # These are for appendStats. Insert new stats at the right place, because
 # SQL needs strict order.
 STATS_KEYS = [
+    'street0VPIChance',
     'street0VPI',
+    'street0AggrChance',
     'street0Aggr',
     'street0CalledRaiseChance',
     'street0CalledRaiseDone',
@@ -331,7 +335,9 @@ STATS_KEYS.reverse()
 CACHE_KEYS = [
     'hands',
     'played',
+    'street0VPIChance',
     'street0VPI',
+    'street0AggrChance',
     'street0Aggr',
     'street0CalledRaiseChance',
     'street0CalledRaiseDone',
