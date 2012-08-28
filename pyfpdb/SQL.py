@@ -3352,7 +3352,9 @@ class Sql:
                     hp.seatNo                           AS seat,
                     p.name                              AS screen_name,
                     sum(hc.HDs)                         AS n,
+                    sum(hc.street0VPIChance)            AS vpip_opp,
                     sum(hc.street0VPI)                  AS vpip,
+                    sum(hc.street0AggrChance)           AS pfr_opp,
                     sum(hc.street0Aggr)                 AS pfr,
                     sum(hc.street0CalledRaiseChance)    AS CAR_opp_0,
                     sum(hc.street0CalledRaiseDone)      AS CAR_0,
@@ -3478,7 +3480,9 @@ class Sql:
                            end)                            AS seat,
                        p.name                              AS screen_name,
                        sum(hc.HDs)                         AS n,
+                       sum(hc.street0VPIChance)            AS vpip_opp,
                        sum(hc.street0VPI)                  AS vpip,
+                       sum(hc.street0AggrChance)           AS pfr_opp,
                        sum(hc.street0Aggr)                 AS pfr,
                        sum(hc.street0CalledRaiseChance)    AS CAR_opp_0,
                        sum(hc.street0CalledRaiseDone)      AS CAR_0,
@@ -3631,7 +3635,9 @@ class Sql:
                            hp.seatNo                                                AS seat,
                            p.name                                                   AS screen_name,
                            1                                                        AS n,
+                           cast(hp2.street0VPIChance as <signed>integer)            AS vpip_opp,
                            cast(hp2.street0VPI as <signed>integer)                  AS vpip,
+                           cast(hp2.street0AggrChance as <signed>integer)           AS pfr_opp,
                            cast(hp2.street0Aggr as <signed>integer)                 AS pfr,
                            cast(hp2.street0CalledRaiseChance as <signed>integer)    AS CAR_opp_0,
                            cast(hp2.street0CalledRaiseDone as <signed>integer)      AS CAR_0,
@@ -3760,7 +3766,9 @@ class Sql:
                            p.name                                                   AS screen_name,
                            h.seats                                                  AS seats,
                            1                                                        AS n,
+                           cast(hp2.street0VPIChance as <signed>integer)            AS vpip_opp,
                            cast(hp2.street0VPI as <signed>integer)                  AS vpip,
+                           cast(hp2.street0AggrChance as <signed>integer)           AS pfr_opp,
                            cast(hp2.street0Aggr as <signed>integer)                 AS pfr,
                            cast(hp2.street0CalledRaiseChance as <signed>integer)    AS CAR_opp_0,
                            cast(hp2.street0CalledRaiseDone as <signed>integer)      AS CAR_0,
@@ -3890,7 +3898,9 @@ class Sql:
                            p.name                                                   AS screen_name,
                            h.seats                                                  AS seats,
                            1                                                        AS n,
+                           cast(hp2.street0VPIChance as <signed>integer)            AS vpip_opp,
                            cast(hp2.street0VPI as <signed>integer)                  AS vpip,
+                           cast(hp2.street0AggrChance as <signed>integer)           AS pfr_opp,
                            cast(hp2.street0Aggr as <signed>integer)                 AS pfr,
                            cast(hp2.street0CalledRaiseChance as <signed>integer)    AS CAR_opp_0,
                            cast(hp2.street0CalledRaiseDone as <signed>integer)      AS CAR_0,
@@ -4198,8 +4208,12 @@ class Sql:
                             /*,<hcgametypeId>                                                         AS gtid*/
                             ,<position>                                                             AS plposition
                             ,count(1)                                                               AS n
-                            ,100.0*sum(cast(hp.street0VPI as <signed>integer))/count(1)             AS vpip
-                            ,100.0*sum(cast(hp.street0Aggr as <signed>integer))/count(1)            AS pfr
+                            ,case when sum(cast(hp.street0VPIChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0VPI as <signed>integer))/sum(cast(hp.street0VPIChance as <signed>integer))
+                             end                                                                    AS vpip
+                            ,case when sum(cast(hp.street0AggrChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0Aggr as <signed>integer))/sum(cast(hp.street0AggrChance as <signed>integer))
+                             end                                                                    AS pfr
                             ,case when sum(cast(hp.street0CalledRaiseChance as <signed>integer)) = 0 then -999
                                   else 100.0*sum(cast(hp.street0CalledRaiseDone as <signed>integer))/sum(cast(hp.street0CalledRaiseChance as <signed>integer))
                              end                                                                    AS car0
@@ -4350,8 +4364,12 @@ class Sql:
                             /*,<hcgametypeId>                                                       AS gtid*/
                             ,<position>                                                             AS plposition
                             ,count(1)                                                               AS n
-                            ,100.0*sum(cast(hp.street0VPI as <signed>integer))/count(1)             AS vpip
-                            ,100.0*sum(cast(hp.street0Aggr as <signed>integer))/count(1)            AS pfr
+                            ,case when sum(cast(hp.street0VPIChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0VPI as <signed>integer))/sum(cast(hp.street0VPIChance as <signed>integer))
+                             end                                                                    AS vpip
+                            ,case when sum(cast(hp.street0AggrChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0Aggr as <signed>integer))/sum(cast(hp.street0AggrChance as <signed>integer))
+                             end                                                                    AS pfr
                             ,case when sum(cast(hp.street0CalledRaiseChance as <signed>integer)) = 0 then -999
                                   else 100.0*sum(cast(hp.street0CalledRaiseDone as <signed>integer))/sum(cast(hp.street0CalledRaiseChance as <signed>integer))
                              end                                                                    AS car0
@@ -4514,8 +4532,12 @@ class Sql:
                             /*,<hcgametypeId>                                                       AS gtid*/
                             ,<position>                                                             AS plposition
                             ,count(1)                                                               AS n
-                            ,100.0*sum(cast(hp.street0VPI as <signed>integer))/count(1)             AS vpip
-                            ,100.0*sum(cast(hp.street0Aggr as <signed>integer))/count(1)            AS pfr
+                            ,case when sum(cast(hp.street0VPIChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0VPI as <signed>integer))/sum(cast(hp.street0VPIChance as <signed>integer))
+                             end                                                                    AS vpip
+                            ,case when sum(cast(hp.street0AggrChance as <signed>integer)) = 0 then -999
+                                  else 100.0*sum(cast(hp.street0Aggr as <signed>integer))/sum(cast(hp.street0AggrChance as <signed>integer))
+                             end                                                                    AS pfr
                             ,case when sum(cast(hp.street0CalledRaiseChance as <signed>integer)) = 0 then -999
                                   else 100.0*sum(cast(hp.street0CalledRaiseDone as <signed>integer))/sum(cast(hp.street0CalledRaiseChance as <signed>integer))
                              end                                                                    AS car0
@@ -4826,9 +4848,12 @@ class Sql:
                            ,<selectgt.bigBlind>                                             AS bigBlindDesc
                            ,<hcgametypeId>                                                  AS gtId
                            ,sum(HDs)                                                        AS n
-                           ,format(100.0*sum(street0VPI)/sum(HDs),1)                        AS vpip
-                           ,format(100.0*sum(street0Aggr)/sum(HDs),1)                       AS pfr
-                           
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else format(100.0*sum(street0VPI)/sum(street0VPIChance),1)
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else format(100.0*sum(street0Aggr)/sum(street0AggrChance),1)
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else format(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),1)
                             end                                                             AS car0
@@ -4932,8 +4957,12 @@ class Sql:
                            ,<selectgt.bigBlind>                                             AS bigBlindDesc
                            ,<hcgametypeId>                                                  AS gtId
                            ,sum(HDs)                                                        AS n
-                           ,round(100.0*sum(street0VPI)/sum(HDs),1)                         AS vpip
-                           ,round(100.0*sum(street0Aggr)/sum(HDs),1)                        AS pfr
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else round(100.0*sum(street0VPI)/sum(street0VPIChance),1)
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else round(100.0*sum(street0Aggr)/sum(street0AggrChance),1)
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else round(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),1)
                             end                                                             AS car0
@@ -5051,8 +5080,12 @@ class Sql:
                            ,<selectgt.bigBlind>                                             AS bigBlindDesc
                            ,<hcgametypeId>                                                  AS gtId
                            ,sum(HDs) as n
-                           ,to_char(100.0*sum(street0VPI)/sum(HDs),'990D0')                 AS vpip
-                           ,to_char(100.0*sum(street0Aggr)/sum(HDs),'90D0')                 AS pfr
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else to_char(100.0*sum(street0VPI)/sum(street0VPIChance),'990D0')
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else to_char(100.0*sum(street0Aggr)/sum(street0AggrChance),'90D0')
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else to_char(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),'90D0')
                             end                                                             AS car0
@@ -5187,8 +5220,12 @@ class Sql:
                                  else 9
                             end                                                             as PlPosition
                            ,sum(HDs)                                                        AS n
-                           ,format(100.0*sum(street0VPI)/sum(HDs),1)                        AS vpip
-                           ,format(100.0*sum(street0Aggr)/sum(HDs),1)                       AS pfr
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else format(100.0*sum(street0VPI)/sum(street0VPIChance),1)
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else format(100.0*sum(street0Aggr)/sum(street0AggrChance),1)
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else format(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),1)
                             end                                                             AS car0
@@ -5325,8 +5362,12 @@ class Sql:
                                  else 9
                             end                                                             AS PlPosition
                            ,sum(HDs)                                                        AS n
-                           ,round(100.0*sum(street0VPI)/sum(HDs),1)                         AS vpip
-                           ,round(100.0*sum(street0Aggr)/sum(HDs),1)                        AS pfr
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else round(100.0*sum(street0VPI)/sum(street0VPIChance),1)
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else round(100.0*sum(street0Aggr)/sum(street0AggrChance),1)
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else round(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),1)
                             end                                                             AS car0
@@ -5474,8 +5515,12 @@ class Sql:
                                  else 9
                             end                                                             AS PlPosition
                            ,sum(HDs)                                                        AS n
-                           ,to_char(round(100.0*sum(street0VPI)/sum(HDs)),'990D0')          AS vpip
-                           ,to_char(round(100.0*sum(street0Aggr)/sum(HDs)),'90D0')          AS pfr
+                           ,case when sum(street0VPIChance) = 0 then '0'
+                                 else to_char(100.0*sum(street0VPI)/sum(street0VPIChance),'990D0')
+                            end                                                             AS vpip
+                           ,case when sum(street0AggrChance) = 0 then '0'
+                                 else to_char(100.0*sum(street0Aggr)/sum(street0AggrChance),'90D0')
+                            end                                                             AS pfr
                            ,case when sum(street0CalledRaiseChance) = 0 then '0'
                                  else to_char(100.0*sum(street0CalledRaiseDone)/sum(street0CalledRaiseChance),'90D0')
                             end                                                             AS car0
