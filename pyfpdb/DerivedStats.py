@@ -48,8 +48,9 @@ def _buildStatsInitializer():
     init['sawShowdown'] = False
     init['showed']      = False
     init['wonAtSD']     = 0.0
-    init['startCards']  = 0
-    init['position']            = 2
+    init['startCards']  = 170
+    init['handString']  = None
+    init['position']    = 2
     init['street0CalledRaiseChance'] = 0
     init['street0CalledRaiseDone'] = 0
     init['street0VPIChance']    = True
@@ -392,8 +393,8 @@ class DerivedStats():
             
         for player in hand.players:
             hole, cards, bcards = [], [], []
-            best_lo, locards, lostring, lo_id = None, None, None, 0
-            best_hi, hicards, histring, hi_id = None, None, None, 0
+            best_lo, locards, lostring, lo_id = None, None, None, 1
+            best_hi, hicards, histring, hi_id = None, None, None, 1
             pname = player[1]
             hp = self.handsplayers.get(pname)
             hero = pname==hand.hero
@@ -414,7 +415,7 @@ class DerivedStats():
                             streetstring = 'street%sSeen' % str(streetId)
                             streetSeen = hp[streetstring]
                         else: streetSeen = False
-                        if (board['allin'] or (hero and streetSeen) or hp['sawShowdown']):
+                        if (board['allin'] or (hero and streetSeen) or hp['sawShowdown']): #(hero and streetSeen) or hp['sawShowdown']):
                             boardId = 0
                             for n in range(len(board['board'])):
                                 if len(board['board']) > 1: 
@@ -423,7 +424,7 @@ class DerivedStats():
                                 cards = [str(c) for c in hole]
                                 if board['board'][n]: bcards = [str(b) for b in board['board'][n]]
                                 else                : bcards = []
-                                histring, lostring, histringold, lostringold, lostringvalue, histringvalue, winnings, hi_id, lo_id = None, None, None, None, 0, 0, 0, 0, 0
+                                histring, lostring, histringold, lostringold, lostringvalue, histringvalue, winnings, hi_id, lo_id = None, None, None, None, 0, 0, 0, 1, 1
                                 if 'omaha' not in game:
                                     if board['board'][n]:
                                         cards = hole + board['board'][n]
@@ -455,64 +456,63 @@ class DerivedStats():
                                              locards = [locards[4]] + locards[1:]
                                          lo_id, lostring = Card.hands['hi'][best_lo[0]]
                                         
-                                     if lostring:
-                                         lostring = self.getHandString('lo', lostring, locards, best_lo)
-                                         lostringvalue = pokereval.best_hand_value("lo", cards, bcards)
-                                         winnings = hp['winnings']
-                                         lostringold = lostring
-                                         if street == last:
-                                             for j in range(len(inserts_temp)):
-                                                 if ((boardId == inserts_temp[j][3]) and (lostring == inserts_temp[j][7]) and 
-                                                    (lostringvalue != inserts_temp[j][9]) and (lostring is not None) and (winnings>0) and
-                                                     (streetId == inserts_temp[j][2]) and (hand.dbid_pids[pname] != inserts_temp[j][1])):
-                                                     loappend = ' - lower kicker'
-                                                     if lostringvalue < inserts_temp[j][9]:
-                                                         lostring += loappend
-                                                     else:
-                                                         if loappend not in inserts_temp[j][5] and inserts_temp[k][10]>0:
-                                                             inserts_temp[j][5] += loappend
-                                     if histring:
-                                         histring = self.getHandString('hi', histring, hicards, best_hi)
-                                         histringvalue = pokereval.best_hand_value("hi", cards, bcards)
-                                         winnings = hp['winnings']
-                                         histringold = histring
-                                         if street == last:
-                                             for k in range(len(inserts_temp)):
-                                                 if ((boardId == inserts_temp[k][3]) and (histring == inserts_temp[k][6]) and
-                                                    (histringvalue != inserts_temp[k][8]) and (histring is not None) and (winnings>0) and
-                                                    (streetId == inserts_temp[k][2]) and (hand.dbid_pids[pname] != inserts_temp[k][1])
-                                                    and (hi_id not in (6, 7, 8, 10))):
-                                                     hiappend = ' - higher kicker'
-                                                     if histringvalue > inserts_temp[k][8]:
-                                                         histring += hiappend
-                                                     else:
-                                                         if hiappend not in inserts_temp[k][4] and inserts_temp[k][10]>0: 
-                                                             inserts_temp[k][4] += hiappend
+                                     #if lostring:
+                                     #    lostring = self.getHandString('lo', lostring, locards, best_lo)
+                                     #    lostringvalue = pokereval.best_hand_value("lo", cards, bcards)
+                                     #    winnings = hp['winnings']
+                                     #    lostringold = lostring
+                                     #    if street == last:
+                                     #        for j in range(len(inserts_temp)):
+                                     #            if ((boardId == inserts_temp[j][3]) and (lostring == inserts_temp[j][7]) and 
+                                     #               (lostringvalue != inserts_temp[j][9]) and (lostring is not None) and (winnings>0) and
+                                     #                (streetId == inserts_temp[j][2]) and (hand.dbid_pids[pname] != inserts_temp[j][1])):
+                                     #                loappend = ' - lower kicker'
+                                     #                if lostringvalue < inserts_temp[j][9]:
+                                     #                    lostring += loappend
+                                     #                else:
+                                     #                    if loappend not in inserts_temp[j][5] and inserts_temp[k][10]>0:
+                                     #                        inserts_temp[j][5] += loappend
+                                     #if histring:
+                                     #    histring = self.getHandString('hi', histring, hicards, best_hi)
+                                     #    histringvalue = pokereval.best_hand_value("hi", cards, bcards)
+                                     #    winnings = hp['winnings']
+                                     #    histringold = histring
+                                     #    if street == last:
+                                     #        for k in range(len(inserts_temp)):
+                                     #            if ((boardId == inserts_temp[k][3]) and (histring == inserts_temp[k][6]) and
+                                     #               (histringvalue != inserts_temp[k][8]) and (histring is not None) and (winnings>0) and
+                                     #               (streetId == inserts_temp[k][2]) and (hand.dbid_pids[pname] != inserts_temp[k][1])
+                                     #               and (hi_id not in (6, 7, 8, 10))):
+                                     #                hiappend = ' - higher kicker'
+                                     #                if histringvalue > inserts_temp[k][8]:
+                                     #                    histring += hiappend
+                                     #                else:
+                                     #                    if hiappend not in inserts_temp[k][4] and inserts_temp[k][10]>0: 
+                                     #                        inserts_temp[k][4] += hiappend
                                 inserts_temp.append( [hand.dbid_hands,
                                                       hand.dbid_pids[pname],
                                                       streetId,
                                                       boardId,
-                                                      histring,
-                                                      lostring,
-                                                      histringold,
-                                                      lostringold,
-                                                      histringvalue,
-                                                      lostringvalue,
-                                                      winnings
+                                                      hi_id,
+                                                      lo_id
+                                                      #histring,
+                                                      #lostring,
+                                                      #histringold,
+                                                      #lostringold,
+                                                      #histringvalue,
+                                                      #lostringvalue,
+                                                      #winnings
                                                       ] )
                 elif (hp['sawShowdown']):
                     streetId = streets[last]
-                    if hilo == 'h':
-                        histring = hand.showdownStrings.get(pname)
-                    else:
-                        lostring = hand.showdownStrings.get(pname)
+                    hp['handString'] = hand.showdownStrings.get(pname)
                     self.handsstove.append( [  
                                        hand.dbid_hands,
                                        hand.dbid_pids[player[1]],
                                        streetId,
                                        0,
-                                       histring,
-                                       lostring,
+                                       1, #histring,
+                                       1, #lostring,
                                        0
                                     ] )
         self.handsstove += [t[:6] + [0] for t in inserts_temp]
