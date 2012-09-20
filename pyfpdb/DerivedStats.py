@@ -531,33 +531,11 @@ class DerivedStats():
     def getCards(self, type, string, cards, best):
         if best[0] == 'Nothing':
             string, cards = None, None
-        elif best[0] == 'NoPair':
-            if type == 'lo':
-                string = cards[0]+cards[1]+cards[2]+cards[3]+cards[4]
-            else:
-                string = cards[0][0]
-        elif best[0] == 'OnePair':
-            string = cards[0][0] 
-        elif best[0] == 'TwoPair':
-            hipair = cards[0][0] 
-            pair = cards[2][0] 
-            string = hipair+pair
-        elif best[0] == 'Trips':
-            string = cards[0][0]
-        elif best[0] == 'Straight':
-            string = cards[0][0] 
-        elif best[0] == 'Flush':
-            string = cards[0][0]+cards[1][0]+cards[2][0]+cards[3][0]+cards[4][0]
-        elif best[0] == 'FlHouse':
-            threeoak = cards[0][0] 
-            pair     = cards[3][0] 
-            string = threeoak+pair
-        elif best[0] == 'Quads':
-            string = cards[0][0] 
-        elif best[0] == 'StFlush':
+        elif best[0] == 'NoPair' and type == 'lo':
+            string = cards[0]+cards[1]+cards[2]+cards[3]+cards[4]
+        else:
             string = cards[0][0]+cards[1][0]+cards[2][0]+cards[3][0]+cards[4][0]
         return string
-
 
     def setPositions(self, hand):
         """Sets the position for each player in HandsPlayers
