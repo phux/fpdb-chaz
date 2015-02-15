@@ -119,9 +119,9 @@ if os.name == 'posix':
     POSIX = True
 else:
     POSIX = False
-    
+
 PYTHON_VERSION = sys.version[:3]
-    
+
 # logging has been set up in fpdb.py or HUD_main.py, use their settings:
 log = logging.getLogger("config")
 
@@ -133,17 +133,17 @@ LOGLEVEL = {'DEBUG'   : logging.DEBUG,
 
 def get_config(file_name, fallback = True):
     """Looks in cwd and in self.default_config_path for a config file."""
-    
+
     #FIXME
     # This function has become difficult to understand, plus it no-longer
-    # just looks for a config file, it actually does file copying 
-    
+    # just looks for a config file, it actually does file copying
+
     # look for example file even if not used here, path is returned to caller
     config_found,example_found,example_copy = False,False,False
     config_path, example_path = None,None
 
     config_path = os.path.join(FPDB_ROOT_PATH, 'pyfpdb', file_name)
-    
+
     #print "config_path=", config_path
     if os.path.exists(config_path):    # there is a file in the cwd
         config_found = True            # so we use it
@@ -238,7 +238,7 @@ def normalizePath(path):
     if os.path.exists(path):
         return os.path.abspath(path)
     return path
-            
+
 ########################################################################
 # application wide consts
 
@@ -259,12 +259,12 @@ if LOCALE_ENCODING in ("US-ASCII", "", None):
     LOCALE_ENCODING = "cp1252"
     if (os.uname()[0]!="Darwin"):
         print(_("Default encoding set to US-ASCII, defaulting to CP1252 instead."), _("Please report this problem."))
-    
+
 # needs LOCALE_ENCODING (above), imported for sqlite setup in Config class below
 import Charset
 
 
-        
+
 ########################################################################
 def string_to_bool(string, default=True):
     """converts a string representation of a boolean value to boolean True or False
@@ -288,22 +288,22 @@ class Layout:
         self.location = []
         self.hh_seats = []
         self.location = map(lambda x: None, range(self.max+1)) # fill array with max seats+1 empty entries
-        # hh_seats is used to map the seat numbers specified in hand history files (and stored in db) onto 
+        # hh_seats is used to map the seat numbers specified in hand history files (and stored in db) onto
         #   the contiguous integerss, 1 to self.max, used to index hud stat_windows (and aw seat_windows) for display
         #   For most sites these numbers are the same, but some sites (e.g. iPoker) omit seat numbers in hand histories
-        #   for tables smaller than 10-max.   
+        #   for tables smaller than 10-max.
         self.hh_seats= map(lambda x: None, range(self.max+1)) # fill array with max seats+1 empty entries
 
         for location_node in node.getElementsByTagName('location'):
             hud_seat = location_node.getAttribute('seat')
             if hud_seat != "":
-                
+
                 # if hist_seat for this seat number is specified in the layout, then store it in the hh_seats list
                 hist_seat = location_node.getAttribute('hist_seat') #XXX
                 if hist_seat:
                     self.hh_seats[int( hud_seat )] = int( hist_seat )
                 else:
-                    # .. otherwise just store the original seat number in the hh_seats list 
+                    # .. otherwise just store the original seat number in the hh_seats list
                     self.hh_seats[int( hud_seat )] = int( hud_seat )
                 self.location[int( hud_seat )] = (int( location_node.getAttribute('x') ), int( location_node.getAttribute('y')))
             elif location_node.getAttribute('common') != "":
@@ -331,10 +331,10 @@ class Email:
         self.useSsl = node.getAttribute("useSsl")
         self.folder = node.getAttribute("folder")
         self.fetchType = node.getAttribute("fetchType")
-        
+
     def __str__(self):
         return "    email\n        fetchType = %s  host = %s\n        username = %s password = %s\n        useSsl = %s folder = %s" \
-            % (self.fetchType, self.host, self.username, self.password, self.useSsl, self.folder) 
+            % (self.fetchType, self.host, self.username, self.password, self.useSsl, self.folder)
 
 
 class Site:
@@ -366,7 +366,7 @@ class Site:
             gt = site_layout_node.getAttribute("game_type")
             ls = site_layout_node.getAttribute("ls")
             self.layout_set[gt]=ls
-                        
+
         self.emails = {}
         for email_node in node.getElementsByTagName('email'):
             email = Email(email_node)
@@ -392,7 +392,7 @@ class Site:
 
         for max in self.fav_seat:
             temp = temp + "    max = %s, fav_seat = %s\n" % (max, self.fav_seat[max])
-            
+
         return temp
 
 
@@ -411,6 +411,7 @@ class Stat:
         self.stat_hith = node.getAttribute("stat_hith")
         self.stat_locolor = node.getAttribute("stat_locolor")
         self.stat_hicolor = node.getAttribute("stat_hicolor")
+        self.stat_min_hands = node.getAttribute("stat_min_hands")
 
     def __str__(self):
         temp = "        _rowcol = %s, _stat_name = %s, \n" % (self.rowcol, self.stat_name)
@@ -426,7 +427,7 @@ class Stat:
 
 
 class Stat_sets:
-    
+
     def __init__(self, node):
         self.name    = node.getAttribute("name")
         self.rows    = int( node.getAttribute("rows") )
@@ -550,7 +551,7 @@ class Game_stat_set:
     def __str__(self):
         return "      Game Type: '%s' Stat Set: '%s'\n" % (self.game_type, self.stat_set)
 
-        
+
 class HHC:
     def __init__(self, node):
         self.site            = node.getAttribute("site")
@@ -567,7 +568,7 @@ class Popup:
         self.pu_class = node.getAttribute("pu_class")
         self.pu_stats    = []
         self.pu_stats_submenu = []
-        
+
         for stat_node in node.getElementsByTagName('pu_stat'):
             self.pu_stats.append(stat_node.getAttribute("pu_stat_name"))
             #if stat_node.getAttribute("pu_stat_submenu"):
@@ -575,7 +576,7 @@ class Popup:
                 tuple(
                 (stat_node.getAttribute("pu_stat_name"),
                 stat_node.getAttribute("pu_stat_submenu"))))
-            
+
 
     def __str__(self):
         temp = "Popup = " + self.name + "  Class = " + self.pu_class + "\n"
@@ -640,14 +641,14 @@ class General(dict):
         for (name, value) in node.attributes.items():
             log.debug(unicode(_("config.general: adding %s = %s"), "utf8") % (name,value))
             self[name] = value
-        
+
         try:
             self["version"]=int(self["version"])
         except KeyError:
             self["version"]=0
             self["ui_language"]="system"
             self["config_difficulty"]="expert"
-            
+
     def get_defaults(self):
         self["version"]=0
         self["ui_language"]="system"
@@ -675,7 +676,7 @@ class GUICashStats(list):
         for child in node.childNodes:
             if child.nodeType == child.ELEMENT_NODE:
                 col_name, col_title, disp_all, disp_posn, field_format, field_type, xalignment=None, None, True, True, "%s", "str", 0.0
-                
+
                 if child.hasAttribute('col_name'):     col_name     = child.getAttribute('col_name')
                 if child.hasAttribute('col_title'):    col_title    = child.getAttribute('col_title')
                 if child.hasAttribute('disp_all'):     disp_all     = string_to_bool(child.getAttribute('disp_all'))
@@ -693,7 +694,7 @@ class GUICashStats(list):
     def get_defaults(self):
         """A list of defaults to be called, should there be no entry in config"""
         # SQL column name, display title, display all, display positional, format, type, alignment
-        defaults = [   [u'game', u'Game', True, True, u'%s', u'str', 0.0],       
+        defaults = [   [u'game', u'Game', True, True, u'%s', u'str', 0.0],
             [u'hand', u'Hand', False, False, u'%s', u'str', 0.0],
             [u'plposition', u'Posn', False, False, u'%s', u'str', 1.0],
             [u'pname', u'Name', False, False, u'%s', u'str', 0.0],
@@ -743,7 +744,7 @@ class RawHands:
             else:
                 print (_("Invalid config value for %s, defaulting to %s") % (raw_hands.save, "\"error\""))
                 self.save="error"
-            
+
             compression=node.getAttribute("compression")
             if save in ("none", "gzip", "bzip2"):
                 self.compression=compression
@@ -769,7 +770,7 @@ class RawTourneys:
             else:
                 print (_("Invalid config value for %s, defaulting to %s") % (raw_tourneys.save, "\"error\""))
                 self.save="error"
-            
+
             compression=node.getAttribute("compression")
             if save in ("none", "gzip", "bzip2"):
                 self.compression=compression
@@ -784,7 +785,7 @@ class RawTourneys:
 
 class Config:
     def __init__(self, file = None, dbname = '', custom_log_dir='', lvl='INFO'):
-        
+
         self.install_method = INSTALL_METHOD
         self.fpdb_root_path = FPDB_ROOT_PATH
         self.appdata_path = APPDATA_PATH
@@ -794,7 +795,7 @@ class Config:
         self.os_family = OS_FAMILY
         self.posix = POSIX
         self.python_version = PYTHON_VERSION
-        
+
         if not os.path.exists(CONFIG_PATH):
             os.mkdir(CONFIG_PATH)
 
@@ -822,7 +823,7 @@ class Config:
         if file is None: (file,self.example_copy,example_file) = get_config(u"HUD_config.xml", True)
 
         self.file = file
-                    
+
         self.supported_sites = {}
         self.supported_games = {}
         self.supported_databases = {}        # databaseName --> Database instance
@@ -866,12 +867,12 @@ class Config:
             self.general.get_defaults()
         for gen_node in doc.getElementsByTagName("general"):
             self.general.add_elements(node=gen_node) # add/overwrite elements in self.general
-            
+
         if int(self.general["version"]) == CONFIG_VERSION:
             self.wrongConfigVersion = False
         else:
             self.wrongConfigVersion = True
-            
+
         if doc.getElementsByTagName("gui_cash_stats") == []:
             self.gui_cash_stats.get_defaults()
         for gcs_node in doc.getElementsByTagName("gui_cash_stats"):
@@ -917,11 +918,11 @@ class Config:
         for ls_node in doc.getElementsByTagName("ls"):
             ls = Layout_set(node = ls_node)
             self.layout_sets[ls.name] = ls
-            
+
         for ss_node in doc.getElementsByTagName("ss"):
             ss = Stat_sets(node = ss_node)
             self.stat_sets[ss.name] = ss
-            
+
 #     s_dbs = doc.getElementsByTagName("mucked_windows")
         for hhc_node in doc.getElementsByTagName("hhc"):
             hhc = HHC(node = hhc_node)
@@ -951,17 +952,17 @@ class Config:
                                      db_user = df_parms['db-user'],
                                      db_pass = df_parms['db-password'])
                 self.save(file=os.path.join(CONFIG_PATH, u"HUD_config.xml"))
-        
+
         if doc.getElementsByTagName("raw_hands") == []:
             self.raw_hands = RawHands()
         for raw_hands_node in doc.getElementsByTagName('raw_hands'):
             self.raw_hands = RawHands(raw_hands_node)
-        
+
         if doc.getElementsByTagName("raw_tourneys") == []:
             self.raw_tourneys = RawTourneys()
         for raw_tourneys_node in doc.getElementsByTagName('raw_tourneys'):
             self.raw_tourneys = RawTourneys(raw_tourneys_node)
-        
+
         #print ""
     #end def __init__
 
@@ -1032,8 +1033,8 @@ class Config:
             #print "getStatSetNode statsetNode:",statsetNode
             if statsetNode.getAttribute("name") == statsetName:
                 return statsetNode
-    
-    
+
+
     def getGameNode(self,gameName):
         """returns DOM game node for a given game"""
         for gameNode in self.doc.getElementsByTagName("game"):
@@ -1042,7 +1043,7 @@ class Config:
                 return gameNode
     #end def getGameNode
 
-    
+
     def get_aux_node(self, aux):
         for aux_node in self.doc.getElementsByTagName("aw"):
             if aux_node.getAttribute("name") == aux:
@@ -1057,7 +1058,7 @@ class Config:
         for layout_node in ls.getElementsByTagName("layout"):
             if layout_node.getAttribute("max") == str(max):
                 return layout_node
-                                
+
     def get_stat_set_node(self, ss):
         for stat_set_node in self.doc.getElementsByTagName("ss"):
             if set_node.getAttribute("name") == ss:
@@ -1093,7 +1094,7 @@ class Config:
                 shutil.move(file, file+".backup")
             except:
                 pass
-                
+
         with open(file, 'w') as f:
             #self.doc.writexml(f)
             f.write( self.wrap_long_lines( self.doc.toxml() ) )
@@ -1132,7 +1133,7 @@ class Config:
         emailNode.setAttribute("folder", newEmail.folder)
         emailNode.setAttribute("useSsl", newEmail.useSsl)
     #end def editEmail
-    
+
     def edit_site(self, site_name, enabled, screen_name, history_path, summary_path):
         site_node = self.get_site_node(site_name)
         site_node.setAttribute("enabled", enabled)
@@ -1140,42 +1141,42 @@ class Config:
         site_node.setAttribute("HH_path", history_path)
         if summary_path:
             site_node.setAttribute("TS_path", summary_path)
-            
+
     def editStats(self, statsetName, statArray):
         """replaces stat selection for the given gameName with the given statArray"""
         statsetNode = self.getStatSetNode(statsetName)
         statNodes = statsetNode.getElementsByTagName("stat")
-        
+
         for node in statNodes:
             statsetNode.removeChild(node)
-        
+
         statsetNode.setAttribute("rows", str(len(statArray)))
         statsetNode.setAttribute("cols", str(len(statArray[0])))
-        
+
         for rowNumber in range(len(statArray)):
             for columnNumber in range(len(statArray[rowNumber])):
                 newStat=self.doc.createElement("stat")
-                
+
                 newAttrStatName=self.doc.createAttribute("_stat_name")
                 newStat.setAttributeNode(newAttrStatName)
                 newStat.setAttribute("_stat_name", statArray[rowNumber][columnNumber])
-                
+
                 newAttrStatName=self.doc.createAttribute("_rowcol")
                 newStat.setAttributeNode(newAttrStatName)
                 newStat.setAttribute("_rowcol", ("("+str(rowNumber+1)+","+str(columnNumber+1)+")"))
-                
+
                 newAttrStatName=self.doc.createAttribute("click")
                 newStat.setAttributeNode(newAttrStatName)
                 newStat.setAttribute("click", "")
-                
+
                 newAttrStatName=self.doc.createAttribute("popup")
                 newStat.setAttributeNode(newAttrStatName)
                 newStat.setAttribute("popup", "default")
-                
+
                 newAttrStatName=self.doc.createAttribute("tip")
                 newStat.setAttributeNode(newAttrStatName)
                 newStat.setAttribute("tip", "")
-                
+
                 statsetNode.appendChild(newStat)
         statNodes = statsetNode.getElementsByTagName("stat") #TODO remove this line?
     #end def editStats
@@ -1183,13 +1184,13 @@ class Config:
 
     def save_layout_set(self, ls, max, locations, width=None, height=None):
         #wid/height normally not specified when saving common from the mucked display
-        
+
         print "saving layout =", ls.name, " ", str(max), "Max ", str(locations), "size:", str(width), "x", str(height)
         ls_node = self.get_layout_set_node(ls.name)
         layout_node = self.get_layout_node(ls_node, max)
         if width: layout_node.setAttribute("width", str(width))
         if height: layout_node.setAttribute("height", str(height))
-        
+
         for (i, pos) in locations.iteritems():
             location_node = self.get_location_node(layout_node, i)
             location_node.setAttribute("x", str( locations[i][0] ))
@@ -1197,7 +1198,7 @@ class Config:
             #now refresh the live instance of the layout set with the new locations
             # this is needed because any future windows created after a save layout
             # MUST pickup the new layout
-            #fixme - this is horrid 
+            #fixme - this is horrid
             if i == "common":
                 self.layout_sets[ls.name].layout[max].common = ( locations[i][0], locations[i][1] )
             else:
@@ -1205,8 +1206,8 @@ class Config:
         # more horridness below, fixme
         if height: self.layout_sets[ls.name].layout[max].height = height
         if width: self.layout_sets[ls.name].layout[max].width = width
-        
-                
+
+
     #NOTE: we got a nice Database class, so why map it again here?
     #            user input validation should be done when initializing the Database class. this allows to give appropriate feddback when something goes wrong
     #            try ..except is evil here. it swallows all kinds of errors. dont do this
@@ -1257,7 +1258,7 @@ class Config:
                 for dbn in self.doc.getElementsByTagName("database"):
                     if dbn.getAttribute('db_name') != db_name and dbn.hasAttribute("default"):
                         dbn.removeAttribute("default")
-            elif db_node.hasAttribute("default"): 
+            elif db_node.hasAttribute("default"):
                 db_node.removeAttribute("default")
         if self.supported_databases.has_key(db_name):
             if db_desc   is not None: self.supported_databases[db_name].dp_desc   = db_desc
@@ -1300,7 +1301,7 @@ class Config:
                 for dbn in self.doc.getElementsByTagName("database"):
                     if dbn.getAttribute('db_name') != db_name and dbn.hasAttribute("default"):
                         dbn.removeAttribute("default")
-            elif db_node.hasAttribute("default"): 
+            elif db_node.hasAttribute("default"):
                 db_node.removeAttribute("default")
         else:
             if db_desc   is not None: db_node.setAttribute("db_desc", db_desc)
@@ -1310,7 +1311,7 @@ class Config:
             if db_server is not None: db_node.setAttribute("db_server", db_server)
             if defaultb or self.db_selected == db_name:
                                       db_node.setAttribute("default", "True")
-            elif db_node.hasAttribute("default"): 
+            elif db_node.hasAttribute("default"):
                                       db_node.removeAttribute("default")
 
         if self.supported_databases.has_key(db_name):
@@ -1327,7 +1328,7 @@ class Config:
         if defaultb:
             self.db_selected = db_name
         return
-    
+
     def get_backend(self, name):
         """Returns the number of the currently used backend"""
         if name == DATABASE_TYPE_MYSQL:
@@ -1369,13 +1370,13 @@ class Config:
 
         try:    hui['card_wd']        = int(self.ui.card_wd)
         except: hui['card_wd']        = 30
-        
+
         try:    hui['deck_type']      = unicode(self.ui.deck_type)
         except: hui['deck_type']        = u'colour'
-        
+
         try:    hui['card_back']      = unicode(self.ui.card_back)
         except: hui['card_back']        = u'back04'
-                
+
         try:    hui['stat_range']        = self.ui.stat_range
         except: hui['stat_range']        = 'A'  # default is show stats for All-time, also S(session) and T(ime)
 
@@ -1392,7 +1393,7 @@ class Config:
         except: hui['seats_cust_nums_low']    = 1
         try:    hui['seats_cust_nums_high']    = int(self.ui.seats_cust_nums_high)
         except: hui['seats_cust_nums_high']    = 10
-          
+
         # Hero specific
 
         try:    hui['h_stat_range']    = self.ui.h_stat_range
@@ -1436,13 +1437,13 @@ class Config:
 
         try:    imp['saveActions']     = self.imp.saveActions
         except:  imp['saveActions']     = False
-        
+
         try:    imp['cacheSessions']     = self.imp.cacheSessions
         except:  imp['cacheSessions']     = False
-        
+
         try:    imp['publicDB']     = self.imp.publicDB
         except:  imp['publicDB']     = False
-        
+
         try:    imp['sessionTimeout']     = self.imp.sessionTimeout
         except:  imp['sessionTimeout']     = 30
 
@@ -1510,7 +1511,7 @@ class Config:
                         (586, 393), (421, 440), (267, 440), (  0, 361),
                         (  0, 280), (121, 280), ( 46,  30) )
         return locations
-             
+
     def get_supported_sites(self, all=False):
         """Returns the list of supported sites."""
         if all:
@@ -1531,21 +1532,21 @@ class Config:
         parms["enabled"]    = self.supported_sites[site].enabled
         parms["aux_enabled"]    = self.supported_sites[site].aux_enabled
         parms["hud_menu_xshift"] = self.supported_sites[site].hud_menu_xshift
-        parms["hud_menu_yshift"] = self.supported_sites[site].hud_menu_yshift        
+        parms["hud_menu_yshift"] = self.supported_sites[site].hud_menu_yshift
         parms["layout_set"] = self.supported_sites[site].layout_set
         parms["emails"] = self.supported_sites[site].emails
         parms["fav_seat"] = self.supported_sites[site].fav_seat
-        
+
         return parms
 
     def get_layout(self, site, game_type):
-        
+
         # find layouts used at site
         # locate the one used for this game_type
-        # return that Layout-set() instance 
-        
+        # return that Layout-set() instance
+
         site_layouts = self.get_site_parameters(site)["layout_set"]
-        
+
         if site_layouts.has_key(game_type):
             return self.layout_sets[site_layouts[game_type]]
         elif site_layouts.has_key("all"):
@@ -1586,7 +1587,7 @@ class Config:
 
     def get_site_id(self, site):
         return( self.site_ids[site] )
-        
+
     def get_aux_windows(self):
         """Gets the list of mucked window formats in the configuration."""
         return self.aux_windows.keys()
@@ -1607,11 +1608,11 @@ class Config:
     def get_stat_sets(self):
         """Gets the list of stat block contents in the configuration."""
         return self.stat_sets.keys()
-        
+
     def get_layout_sets(self):
         """Gets the list of block layouts in the configuration."""
         return self.layout_sets.keys()
-        
+
     def get_layout_set_parameters(self, name):
         """Gets a dict of parameters from the named ls."""
         param = {}
@@ -1642,12 +1643,12 @@ class Config:
                 value = getattr(self.supported_games[name], key)
                 if callable(value): continue
                 param[key] = value
-                
+
             #some gymnastics now to load the correct Stats_sets instance
             # into the game_stat_set key
-            
+
             game_stat_set = getattr(self.supported_games[name], 'game_stat_set')
-                
+
             if game_stat_set.has_key(game_type):
                 param['game_stat_set'] = self.stat_sets[game_stat_set[game_type].stat_set]
             elif game_stat_set.has_key("all"):
@@ -1656,9 +1657,9 @@ class Config:
                 return None
 
             return param
-            
+
         return None
-        
+
     def execution_path(self, filename):
         """Join the fpdb path to filename."""
         return os.path.join(os.path.dirname(inspect.getfile(sys._getframe(0))), filename)
@@ -1672,7 +1673,7 @@ class Config:
 if __name__== "__main__":
     set_logfile(u"fpdb-log.txt")
     c = Config()
-    
+
     print "\n----------- GENERAL -----------"
     print c.general
 
@@ -1691,11 +1692,11 @@ if __name__== "__main__":
     print "\n----------- AUX WINDOW FORMATS -----------"
     for w in c.aux_windows.keys():
         print c.aux_windows[w]
-    
+
     print "\n----------- LAYOUT SETS FORMATS -----------"
     for w in c.layout_sets.keys():
         print c.layout_sets[w]
-    
+
     print "\n----------- STAT SETS FORMATS -----------"
     for w in c.stat_sets.keys():
         print c.stat_sets[w]
@@ -1707,18 +1708,18 @@ if __name__== "__main__":
     print "\n----------- POPUP WINDOW FORMATS -----------"
     for w in c.popup_windows.keys():
         print c.popup_windows[w]
-        
+
     print "\n-----------  DATABASE PARAMS -----------"
     print "db    = ", c.get_db_parameters()
-    
+
     print "\n-----------  HUD PARAMS -----------"
     print "hud params ="
     for hud_param, value in c.get_hud_ui_parameters().iteritems():
         print " %s = %s" % (hud_param, value)
-        
+
     print "\n-----------  STARTUP PATH -----------"
     print "start up path = ", c.execution_path("")
-    
+
     print "\n-----------  GUI CASH STATS -----------"
     print "gui_cash_stats =", c.gui_cash_stats
 

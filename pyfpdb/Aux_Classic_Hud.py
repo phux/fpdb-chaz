@@ -28,10 +28,10 @@ This module structure must be based upon simple HUD in the module Aux_Hud.
 Aux_Hud is minimal frozen functionality and is not changed,so
 HUD customisation is done in modules which extend/subclass/override aux_hud.
 
-***HERE BE DRAGONS*** 
-Please take extra care making changes to this code - there is 
+***HERE BE DRAGONS***
+Please take extra care making changes to this code - there is
 multiple-level inheritence in much of this code, class heirarchies
-are not immediately obvious, and there is very close linkage with most of 
+are not immediately obvious, and there is very close linkage with most of
 the Hud modules.
 """
 import L10n
@@ -65,10 +65,10 @@ class Classic_HUD(Aux_Hud.Simple_HUD):
 
     def __init__(self, hud, config, params):
         super(Classic_HUD, self).__init__(hud, config, params)
-        
+
         # the following attributes ensure that the correct
         # classes are invoked by the calling modules (aux_hud+mucked)
-        
+
         self.aw_class_window = Classic_Stat_Window
         self.aw_class_stat = Classic_stat
         self.aw_class_table_mw = Classic_table_mw
@@ -82,7 +82,7 @@ class Classic_Stat_Window(Aux_Hud.Simple_Stat_Window):
     def update_contents(self, i):
         super(Classic_Stat_Window, self).update_contents(i)
         if i == "common": return
-                
+
         # control kill/display of active/inactive player stat blocks
         if self.aw.get_id_from_seat(i) is None:
             #no player dealt in this seat for this hand
@@ -97,44 +97,48 @@ class Classic_Stat_Window(Aux_Hud.Simple_Stat_Window):
             self.set_opacity(float(self.aw.params['opacity']))
             # show item, just in case it was hidden by the user
             self.show()
-            
+
     def button_press_middle(self, widget, event, *args):
         self.hide()
 
 
 class Classic_stat(Aux_Hud.Simple_stat):
     """A class to display each individual statistic on the Stat_Window"""
-    
+
     def __init__(self, stat, seat, popup, game_stat_config, aw):
-    
+
         super(Classic_stat, self).__init__(stat, seat, popup, game_stat_config, aw)
         #game_stat_config is the instance of this stat in the supported games stat configuration
         #use this prefix to directly extract the attributes
-        
+
         self.popup = game_stat_config.popup
         self.click = game_stat_config.click # not implemented yet
         self.tip = game_stat_config.tip     # not implemented yet
         self.hudprefix = game_stat_config.hudprefix
         self.hudsuffix = game_stat_config.hudsuffix
-                
-        try: 
+
+        try:
             self.stat_locolor = gtk.gdk.Color(game_stat_config.stat_locolor)
             self.stat_loth = game_stat_config.stat_loth
         except: self.stat_locolor=self.stat_loth=""
-        try: 
+        try:
             self.stat_hicolor = gtk.gdk.Color(game_stat_config.stat_hicolor)
             self.stat_hith = game_stat_config.stat_hith
-        except: self.stat_hicolor=self.stat_hith=""   
+        except: self.stat_hicolor=self.stat_hith=""
+        try:
+            self.stat_min_hands = game_stat_config.stat_min_hands
+        except: self.stat_min_hands=""
+
         try: self.hudcolor = gtk.gdk.Color(game_stat_config.hudcolor)
-        except: self.hudcolor = gtk.gdk.Color(aw.params['fgcolor']) 
+        except: self.hudcolor = gtk.gdk.Color(aw.params['fgcolor'])
 
     def update(self, player_id, stat_dict):
         super(Classic_stat, self).update(player_id, stat_dict)
 
         if not self.number: #stat did not create, so exit now
             return False
-            
-        fg=self.hudcolor        
+
+        fg=self.hudcolor
         if self.stat_loth != "":
             try: # number[1] might not be a numeric (e.g. NA)
                 if float(self.number[1]) < float(self.stat_loth):
@@ -145,11 +149,17 @@ class Classic_stat(Aux_Hud.Simple_stat):
                 if float(self.number[1]) > float(self.stat_hith):
                     fg=self.stat_hicolor
             except: pass
+        if self.stat_min_hands != "":
+            try: # number[1] might not be a numeric (e.g. NA)
+                noHands = stat_dict[player_id]['n']
+                if float(noHands) < float(self.stat_min_hands):
+                    fg=gtk.gdk.Color("#333333")
+            except: pass
         self.set_color(fg=fg,bg=None)
-        
+
         statstring = "%s%s%s" % (self.hudprefix, str(self.number[1]), self.hudsuffix)
         self.lab.set_text(statstring)
-        
+
         tip = "%s\n%s\n%s, %s" % (stat_dict[player_id]['screen_name'], self.number[5], self.number[3], self.number[4])
         Stats.do_tip(self.widget, tip)
 
@@ -161,7 +171,7 @@ class Classic_table_mw(Aux_Hud.Simple_table_mw):
     """
     A class normally controlling the table menu for that table
     Normally a 1:1 relationship with the Classic_HUD class
-    
+
     This is invoked by the create_common method of the Classic/Simple_HUD class
     (although note that the positions of this block are controlled by shiftx/y
     and NOT by the common position in the layout)
