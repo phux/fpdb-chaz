@@ -153,7 +153,7 @@ class Classic_stat(Aux_Hud.Simple_stat):
             try: # number[1] might not be a numeric (e.g. NA)
                 noHands = stat_dict[player_id]['n']
                 if float(noHands) < float(self.stat_min_hands):
-                    fg=gtk.gdk.Color("#333333")
+                    fg=gtk.gdk.Color("#000000")
             except: pass
         self.set_color(fg=fg,bg=None)
 
