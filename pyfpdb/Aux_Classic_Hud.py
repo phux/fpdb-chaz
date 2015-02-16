@@ -128,6 +128,9 @@ class Classic_stat(Aux_Hud.Simple_stat):
         try:
             self.stat_min_hands = game_stat_config.stat_min_hands
         except: self.stat_min_hands=""
+        try:
+            self.stat_min_situations = game_stat_config.stat_min_situations
+        except: self.stat_min_situations=""
 
         try: self.hudcolor = gtk.gdk.Color(game_stat_config.hudcolor)
         except: self.hudcolor = gtk.gdk.Color(aw.params['fgcolor'])
@@ -153,6 +156,14 @@ class Classic_stat(Aux_Hud.Simple_stat):
             try: # number[1] might not be a numeric (e.g. NA)
                 noHands = stat_dict[player_id]['n']
                 if float(noHands) < float(self.stat_min_hands):
+                    fg=gtk.gdk.Color("#222222")
+            except: pass
+        if self.stat_min_situations != "":
+            try: # number[1] might not be a numeric (e.g. NA)
+                tmp_opp = self.number[4].split('/')
+                tmp_opp2 = tmp_opp[1]
+                opps = tmp_opp2[:-1]
+                if float(opps) < float(self.stat_min_situations):
                     fg=gtk.gdk.Color("#000000")
             except: pass
         self.set_color(fg=fg,bg=None)
