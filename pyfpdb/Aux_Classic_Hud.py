@@ -122,9 +122,18 @@ class Classic_stat(Aux_Hud.Simple_stat):
             self.stat_loth = game_stat_config.stat_loth
         except: self.stat_locolor=self.stat_loth=""
         try:
+            self.stat_midlocolor = gtk.gdk.Color(game_stat_config.stat_midlocolor)
+            self.stat_midloth = game_stat_config.stat_midloth
+        except: self.stat_midlocolor=self.stat_midloth=""
+        try:
+            self.stat_midhicolor = gtk.gdk.Color(game_stat_config.stat_midhicolor)
+            self.stat_midhith = game_stat_config.stat_midhith
+        except: self.stat_midhicolor=self.stat_midhith=""
+        try:
             self.stat_hicolor = gtk.gdk.Color(game_stat_config.stat_hicolor)
             self.stat_hith = game_stat_config.stat_hith
         except: self.stat_hicolor=self.stat_hith=""
+
         try:
             self.stat_min_hands = game_stat_config.stat_min_hands
         except: self.stat_min_hands=""
@@ -142,21 +151,25 @@ class Classic_stat(Aux_Hud.Simple_stat):
             return False
 
         fg=self.hudcolor
+        if self.stat_midloth != "":
+            try: # number[1] might not be a numeric (e.g. NA)
+                if float(self.number[1]) < float(self.stat_midloth):
+                    fg=self.stat_midlocolor
+            except: pass
         if self.stat_loth != "":
             try: # number[1] might not be a numeric (e.g. NA)
                 if float(self.number[1]) < float(self.stat_loth):
                     fg=self.stat_locolor
             except: pass
+        if self.stat_midhith != "":
+            try: # number[1] might not be a numeric (e.g. NA)
+                if float(self.number[1]) > float(self.stat_midhith):
+                    fg=self.stat_midhicolor
+            except: pass
         if self.stat_hith != "":
             try: # number[1] might not be a numeric (e.g. NA)
                 if float(self.number[1]) > float(self.stat_hith):
                     fg=self.stat_hicolor
-            except: pass
-        if self.stat_min_hands != "":
-            try: # number[1] might not be a numeric (e.g. NA)
-                noHands = stat_dict[player_id]['n']
-                if float(noHands) < float(self.stat_min_hands):
-                    fg=gtk.gdk.Color("#222222")
             except: pass
         if self.stat_min_situations != "":
             try: # number[1] might not be a numeric (e.g. NA)
@@ -164,6 +177,12 @@ class Classic_stat(Aux_Hud.Simple_stat):
                 tmp_opp2 = tmp_opp[1]
                 opps = tmp_opp2[:-1]
                 if float(opps) < float(self.stat_min_situations):
+                    fg=gtk.gdk.Color("#111111")
+            except: pass
+        if self.stat_min_hands != "":
+            try: # number[1] might not be a numeric (e.g. NA)
+                noHands = stat_dict[player_id]['n']
+                if float(noHands) < float(self.stat_min_hands):
                     fg=gtk.gdk.Color("#000000")
             except: pass
         self.set_color(fg=fg,bg=None)
