@@ -48,9 +48,6 @@ import logging
 # logging has been set up in fpdb.py or HUD_main.py, use their settings:
 log = logging.getLogger("hud")
 
-#    pyGTK modules
-import gtk
-
 #    FreePokerTools modules
 import Aux_Hud
 import Stats
@@ -72,7 +69,6 @@ class Classic_HUD(Aux_Hud.Simple_HUD):
         self.aw_class_window = Classic_Stat_Window
         self.aw_class_stat = Classic_stat
         self.aw_class_table_mw = Classic_table_mw
-        self.aw_class_eb = Classic_eb
         self.aw_class_label = Classic_label
 
 
@@ -88,17 +84,17 @@ class Classic_Stat_Window(Aux_Hud.Simple_Stat_Window):
             #no player dealt in this seat for this hand
             # dim the display to indicate that this block
             # is currently inactive
-            self.set_opacity(float(self.aw.params['opacity'])*0.3)
+            self.setWindowOpacity(float(self.aw.params['opacity'])*0.3)
         else:
             #player dealt-in, force display of stat block
             #need to call move() to re-establish window position
             self.move(self.aw.positions[i][0]+self.aw.hud.table.x,
                         self.aw.positions[i][1]+self.aw.hud.table.y)
-            self.set_opacity(float(self.aw.params['opacity']))
+            self.setWindowOpacity(float(self.aw.params['opacity']))
             # show item, just in case it was hidden by the user
             self.show()
 
-    def button_press_middle(self, widget, event, *args):
+    def button_press_middle(self, event):
         self.hide()
 
 
@@ -118,21 +114,21 @@ class Classic_stat(Aux_Hud.Simple_stat):
         self.hudsuffix = game_stat_config.hudsuffix
 
         try:
-            self.stat_locolor = gtk.gdk.Color(game_stat_config.stat_locolor)
+            self.stat_locolor = game_stat_config.stat_locolor
             self.stat_loth = game_stat_config.stat_loth
         except: self.stat_locolor=self.stat_loth=""
         try:
-            self.stat_midlocolor = gtk.gdk.Color(game_stat_config.stat_midlocolor)
+            self.stat_midlocolor = game_stat_config.stat_midlocolor
             self.stat_midloth = game_stat_config.stat_midloth
         except: self.stat_midlocolor=self.stat_midloth=""
         try:
-            self.stat_midhicolor = gtk.gdk.Color(game_stat_config.stat_midhicolor)
+            self.stat_midhicolor = game_stat_config.stat_midhicolor
             self.stat_midhith = game_stat_config.stat_midhith
         except: self.stat_midhicolor=self.stat_midhith=""
         try:
-            self.stat_hicolor = gtk.gdk.Color(game_stat_config.stat_hicolor)
+            self.stat_hicolor = game_stat_config.stat_hicolor
             self.stat_hith = game_stat_config.stat_hith
-        except: self.stat_hicolor=self.stat_hith=""
+        except: self.stat_hicolor=self.stat_hith="" 
 
         try:
             self.stat_min_hands = game_stat_config.stat_min_hands
@@ -141,8 +137,8 @@ class Classic_stat(Aux_Hud.Simple_stat):
             self.stat_min_situations = game_stat_config.stat_min_situations
         except: self.stat_min_situations=""
 
-        try: self.hudcolor = gtk.gdk.Color(game_stat_config.hudcolor)
-        except: self.hudcolor = gtk.gdk.Color(aw.params['fgcolor'])
+        try: self.hudcolor = game_stat_config.hudcolor
+        except: self.hudcolor = aw.params['fgcolor']
 
     def update(self, player_id, stat_dict):
         super(Classic_stat, self).update(player_id, stat_dict)
@@ -187,14 +183,13 @@ class Classic_stat(Aux_Hud.Simple_stat):
             except: pass
         self.set_color(fg=fg,bg=None)
 
-        statstring = "%s%s%s" % (self.hudprefix, str(self.number[1]), self.hudsuffix)
-        self.lab.set_text(statstring)
+        statstring = "%s%s%s" % (self.hudprefix, unicode(self.number[1]), self.hudsuffix)
+        self.lab.setText(statstring)
 
         tip = "%s\n%s\n%s, %s" % (stat_dict[player_id]['screen_name'], self.number[5], self.number[3], self.number[4])
-        Stats.do_tip(self.widget, tip)
+        Stats.do_tip(self.lab, tip)
 
 
-class Classic_eb(Aux_Hud.Simple_eb): pass
 class Classic_label(Aux_Hud.Simple_label): pass
 
 class Classic_table_mw(Aux_Hud.Simple_table_mw):

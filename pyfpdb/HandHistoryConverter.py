@@ -24,7 +24,6 @@ import traceback
 from optparse import OptionParser
 import os
 import os.path
-import ntpath
 import xml.dom.minidom
 import codecs
 from decimal_wrapper import Decimal
@@ -129,6 +128,7 @@ HandHistoryConverter: '%(sitename)s'
         
         self.numHands = 0
         self.numPartial = 0
+        self.numSkipped = 0
         self.numErrors = 0
         lastParsed = None
         handsList = self.allHandsAsList()
@@ -146,6 +146,9 @@ HandHistoryConverter: '%(sitename)s'
                     self.numPartial += 1
                     lastParsed = 'partial'
                     log.debug("%s" % e)
+                except FpdbHandSkipped, e:
+                    self.numSkipped += 1
+                    lastParsed = 'skipped'
                 except FpdbParseError:
                     self.numErrors += 1
                     lastParsed = 'error'
@@ -175,12 +178,6 @@ HandHistoryConverter: '%(sitename)s'
     def setAutoPop(self, value):
         self.autoPop = value
                 
-    def progressNotify(self):
-        "A callback to the interface while events are pending"
-        import gtk, pygtk
-        while gtk.events_pending():
-            gtk.main_iteration(False)
-
     def allHandsAsList(self):
         """Return a list of handtexts in the file at self.in_path"""
         #TODO : any need for this to be generator? e.g. stars support can email one huge file of all hands in a year. Better to read bit by bit than all at once.
@@ -224,7 +221,7 @@ HandHistoryConverter: '%(sitename)s'
         if self.isPartial(handText):
             raise FpdbHandPartial(_("Could not identify as a %s hand") % self.sitename)
         if self.copyGameHeader:
-            gametype = self.parseHeader(handText, self.whole_file)
+            gametype = self.parseHeader(handText, self.whole_file.replace('\r\n', '\n'))
         else:
             gametype = self.determineGameType(handText)
         hand = None
@@ -234,6 +231,8 @@ HandHistoryConverter: '%(sitename)s'
             # TODO: not ideal, just trying to not error. Throw ParseException?
             self.numErrors += 1
         else:
+            if gametype['category'] in self.import_parameters['importFilters']:
+                raise FpdbHandSkipped("Skipped %s hand" % gametype['type'])
             # See if gametype is supported.
             if 'mix' not in gametype: gametype['mix'] = 'none'
             if 'ante' not in gametype: gametype['ante'] = 0
@@ -521,10 +520,10 @@ or None if we fail to get the info """
 
     def getParsedObjectType(self):
         return self.parsedObjectType
-    
+
     def getBasename(self):
-        head, tail = ntpath.split(self.in_path)
-        base = tail or ntpath.basename(head)
+        head, tail = os.path.split(self.in_path)
+        base = tail or os.path.basename(head)
         return base.split('.')[0]
 
     #returns a status (True/False) indicating wether the parsing could be done correctly or not
@@ -624,6 +623,8 @@ or None if we fail to get the info """
             givenTZ = timezone('Pacific/Auckland')
         elif givenTimezone == 'UTC': # Universal time co-ordinated
             givenTZ = pytz.UTC
+        elif givenTimezone in pytz.all_timezones:
+            givenTZ = timezone(givenTimezone)
 
         if givenTZ is None:
             # do not crash if timezone not in list, just return UTC localized time
@@ -680,7 +681,7 @@ or None if we fail to get the info """
             if money[-4] == '.':
                 money = money[:-4] + ',' + money[-3:]
 
-        return money.replace(',', '')
+        return money.replace(',', '').replace("'", '')
 
 def getTableTitleRe(config, sitename, *args, **kwargs):
     "Returns string to search in windows titles for current site"

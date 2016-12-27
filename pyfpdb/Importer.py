@@ -29,13 +29,14 @@ import re
 
 import logging, traceback
 
-import gtk
+from PyQt5.QtWidgets import QProgressBar, QLabel, QDialog, QVBoxLayout
+from PyQt5.QtCore import QCoreApplication
 
 #    fpdb/FreePokerTools modules
 import Database
 import Configuration
 import IdentifySite
-from Exceptions import FpdbParseError, FpdbHandDuplicate
+from Exceptions import FpdbParseError, FpdbHandDuplicate, FpdbHandPartial
 
 try:
     import xlrd
@@ -149,11 +150,11 @@ class Importer:
         self.pos_in_file = {}
         self.filelist = {}
 
-    def logImport(self, type, file, stored, dups, partial, errs, ttime, id):
-        hands = stored + dups + partial + errs
+    def logImport(self, type, file, stored, dups, partial, skipped, errs, ttime, id):
+        hands = stored + dups + partial + skipped + errs
         now = datetime.datetime.utcnow()
         ttime100 = ttime * 100
-        self.database.updateFile([type, now, now, hands, stored, dups, partial, errs, ttime100, True, id])
+        self.database.updateFile([type, now, now, hands, stored, dups, partial, skipped, errs, ttime100, True, id])
         self.database.commit()
     
     def addFileToList(self, fpdbfile):
@@ -166,7 +167,7 @@ class Importer:
         fpdbfile.fileId = self.database.get_id(file)
         if not fpdbfile.fileId:
             now = datetime.datetime.utcnow()
-            fpdbfile.fileId = self.database.storeFile([file, fpdbfile.site.name, now, now, 0, 0, 0, 0, 0, 0, False])
+            fpdbfile.fileId = self.database.storeFile([file, fpdbfile.site.name, now, now, 0, 0, 0, 0, 0, 0, 0, False])
             self.database.commit()
             
     #Add an individual file to filelist
@@ -252,7 +253,7 @@ class Importer:
         if 'dropHudCache' in self.settings and self.settings['dropHudCache'] == 'auto':
             self.settings['dropHudCache'] = self.calculate_auto2(self.database, 25.0, 500.0)    # returns "drop"/"don't drop"
 
-        (totstored, totdups, totpartial, toterrors) = self.importFiles(None)
+        (totstored, totdups, totpartial, totskipped, toterrors) = self.importFiles(None)
 
         # Tidying up after import
         #if 'dropHudCache' in self.settings and self.settings['dropHudCache'] == 'drop':
@@ -263,7 +264,7 @@ class Importer:
         self.runPostImport()
         self.database.analyzeDB()
         endtime = time()
-        return (totstored, totdups, totpartial, toterrors, endtime-starttime)
+        return (totstored, totdups, totpartial, totskipped, toterrors, endtime-starttime)
     # end def runImport
     
     def runPostImport(self):
@@ -277,6 +278,7 @@ class Importer:
         totstored = 0
         totdups = 0
         totpartial = 0
+        totskipped = 0
         toterrors = 0
         tottime = 0
         filecount = 0
@@ -285,16 +287,19 @@ class Importer:
         movefailedfiles = False #TODO and this too
         
         #prepare progress popup window
-        ProgressDialog = ProgressBar(len(self.filelist), self.parent)
+        ProgressDialog = ImportProgressDialog(len(self.filelist), self.parent)
+        ProgressDialog.resize(500, 200)
+        ProgressDialog.show()
         
         for f in self.filelist:
             filecount = filecount + 1
             ProgressDialog.progress_update(f, str(self.database.getHandCount()))
 
-            (stored, duplicates, partial, errors, ttime) = self._import_despatch(self.filelist[f])
+            (stored, duplicates, partial, skipped, errors, ttime) = self._import_despatch(self.filelist[f])
             totstored += stored
             totdups += duplicates
             totpartial += partial
+            totskipped += skipped
             toterrors += errors
 
             if moveimportedfiles and movefailedfiles:
@@ -306,24 +311,25 @@ class Importer:
                     if movefailedfiles:
                         shutil.move(file, "c:\\fpdbfailed\\%d-%s" % (fileerrorcount, os.path.basename(file[3:]) ) )
             
-            self.logImport('bulk', f, stored, duplicates, partial, errors, ttime, self.filelist[f].fileId)
-            
+            self.logImport('bulk', f, stored, duplicates, partial, skipped, errors, ttime, self.filelist[f].fileId)
+
+        ProgressDialog.accept()
         del ProgressDialog
         
-        return (totstored, totdups, totpartial, toterrors)
+        return (totstored, totdups, totpartial, totskipped, toterrors)
     # end def importFiles
 
     def _import_despatch(self, fpdbfile):
-        stored, duplicates, partial, errors, ttime = 0,0,0,0,0
+        stored, duplicates, partial, skipped, errors, ttime = 0,0,0,0,0,0
         if fpdbfile.ftype in ("hh", "both"):
-            (stored, duplicates, partial, errors, ttime) = self._import_hh_file(fpdbfile)
+            (stored, duplicates, partial, skipped, errors, ttime) = self._import_hh_file(fpdbfile)
         if fpdbfile.ftype == "summary":
-            (stored, duplicates, partial, errors, ttime) = self._import_summary_file(fpdbfile)
+            (stored, duplicates, partial, skipped, errors, ttime) = self._import_summary_file(fpdbfile)
         if fpdbfile.ftype == "both" and fpdbfile.path not in self.updatedsize:
             self._import_summary_file(fpdbfile)
         #    pass
         print "DEBUG: _import_summary_file.ttime: %.3f %s" % (ttime, fpdbfile.ftype)
-        return (stored, duplicates, partial, errors, ttime)
+        return (stored, duplicates, partial, skipped, errors, ttime)
 
 
     def calculate_auto2(self, db, scale, increment):
@@ -377,12 +383,12 @@ class Importer:
                                 self.caller.addText("\n"+os.path.basename(f))
                         except KeyError:
                             log.error("File '%s' seems to have disappeared" % f)
-                        (stored, duplicates, partial, errors, ttime) = self._import_despatch(self.filelist[f])
-                        self.logImport('auto', f, stored, duplicates, partial, errors, ttime, self.filelist[f].fileId)
+                        (stored, duplicates, partial, skipped, errors, ttime) = self._import_despatch(self.filelist[f])
+                        self.logImport('auto', f, stored, duplicates, partial, skipped, errors, ttime, self.filelist[f].fileId)
                         self.database.commit()
                         try:
                             if not os.path.isdir(f): # Note: This assumes that whatever calls us has an "addText" func
-                                self.caller.addText(" %d stored, %d duplicates, %d partial, %d errors (time = %f)" % (stored, duplicates, partial, errors, ttime))
+                                self.caller.addText(" %d stored, %d duplicates, %d partial, %d skipped, %d errors (time = %f)" % (stored, duplicates, partial, skipped, errors, ttime))
                         except KeyError: # TODO: Again, what error happens here? fix when we find out ..
                             pass
                         self.updatedsize[f] = stat_info.st_size
@@ -409,7 +415,7 @@ class Importer:
         """Function for actual import of a hh file
             This is now an internal function that should not be called directly."""
 
-        (stored, duplicates, partial, errors, ttime) = (0, 0, 0, 0, time())
+        (stored, duplicates, partial, skipped, errors, ttime) = (0, 0, 0, 0, 0, time())
 
         # Load filter, process file, pass returned filename to import_fpdb_file
         log.info(_("Converting %s") % fpdbfile.path)
@@ -432,10 +438,12 @@ class Importer:
             self.pos_in_file[file] = hhc.getLastCharacterRead()
             #Tally the results
             partial  = getattr(hhc, 'numPartial')
+            skipped  = getattr(hhc, 'numSkipped')
             errors   = getattr(hhc, 'numErrors')
             stored   = getattr(hhc, 'numHands')
             stored -= errors
             stored -= partial
+            stored -= skipped
             
             if stored > 0:
                 if self.caller: self.progressNotify()
@@ -531,7 +539,7 @@ class Importer:
                 if self.settings['cacheHHC']:
                     self.handhistoryconverter = hhc
         elif (self.mode=='auto'):
-            return (0, 0, partial, errors, time() - ttime)
+            return (0, 0, partial, skipped, errors, time() - ttime)
         
         stored -= duplicates
         
@@ -540,7 +548,7 @@ class Importer:
                 fpdbfile.ftype = "both"
 
         ttime = time() - ttime
-        return (stored, duplicates, partial, errors, ttime)
+        return (stored, duplicates, partial, skipped, errors, ttime)
     
     def autoSummaryGrab(self, force = False):
         for f, fpdbfile in self.filelist.items():
@@ -550,7 +558,7 @@ class Importer:
                 fpdbfile.ftype = "hh"
 
     def _import_summary_file(self, fpdbfile):
-        (stored, duplicates, partial, errors, imported, ttime) = (0, 0, 0, 0, 0, time())
+        (stored, duplicates, partial, skipped, errors, ttime) = (0, 0, 0, 0, 0, time())
         mod = __import__(fpdbfile.site.summary)
         obj = getattr(mod, fpdbfile.site.summary, None)
         if callable(obj):
@@ -558,7 +566,7 @@ class Importer:
             summaryTexts = self.readFile(obj, fpdbfile.path, fpdbfile.site.name)
             if summaryTexts is None:
                 log.error("Found: '%s' with 0 characters... skipping" % fpbdfile.path)
-                return (0, 0, 0, 1, time()) # File had 0 characters
+                return (0, 0, 0, 0, 1, time()) # File had 0 characters
             ####Lock Placeholder####
             for j, summaryText in enumerate(summaryTexts, start=1):
                 doinsert = len(summaryTexts)==j
@@ -566,22 +574,21 @@ class Importer:
                     conv = obj(db=self.database, config=self.config, siteName=fpdbfile.site.name, summaryText=summaryText, in_path = fpdbfile.path, header=summaryTexts[0])
                     self.database.resetBulkCache(False)
                     conv.insertOrUpdate(printtest = self.settings['testData'])
-                except Exceptions.FpdbHandPartial, e:
+                except FpdbHandPartial, e:
                     partial += 1
                 except FpdbParseError, e:
                     log.error(_("Summary import parse error in file: %s") % fpdbfile.path)
                     errors += 1
                 if j != 1:
                     print _("Finished importing %s/%s tournament summaries") %(j, len(summaryTexts))
-                imported = j
+                stored = j
             ####Lock Placeholder####
         ttime = time() - ttime
-        return (imported - errors - partial, duplicates, partial, errors, ttime)
+        return (stored - errors - partial, duplicates, partial, skipped, errors, ttime)
 
     def progressNotify(self):
         "A callback to the interface while events are pending"
-        while gtk.events_pending():
-            gtk.main_iteration(False)
+        QCoreApplication.processEvents()
             
     def readFile(self, obj, filename, site):
         if filename.endswith('.xls') or filename.endswith('.xlsx') and xlrd:
@@ -597,23 +604,24 @@ class Importer:
                 return None
             re_Split = obj.getSplitRe(obj,foabs)
             summaryTexts = re.split(re_Split, foabs)
-            
-            # The summary files tend to have a header or footer
-            # Remove the first and/or last entry if it has < 100 characters
-            if not len(summaryTexts[0]):
-                del summaryTexts[0]
-            
-            if len(summaryTexts)>1:
-                if len(summaryTexts[-1]) <= 100:
+            # Summary identified but not split
+            if len(summaryTexts)==1:
+                return summaryTexts
+            else:
+                # The summary files tend to have a header
+                # Remove the first entry if it has < 150 characters
+                if len(summaryTexts) > 1 and len(summaryTexts[0]) <= 150:
+                    del summaryTexts[0]
+                    log.warn(_("TourneyImport: Removing text < 150 characters from start of file"))
+                    
+                # Sometimes the summary files also have a footer
+                # Remove the last entry if it has < 100 characters   
+                if len(summaryTexts) > 1 and len(summaryTexts[-1]) <= 100:
                     summaryTexts.pop()
                     log.warn(_("TourneyImport: Removing text < 100 characters from end of file"))
-    
-                if len(summaryTexts[0]) <= 130:
-                    del summaryTexts[0]
-                    log.warn(_("TourneyImport: Removing text < 100 characters from start of file"))
         return summaryTexts 
         
-class ProgressBar:
+class ImportProgressDialog(QDialog):
 
     """
     Popup window to show progress
@@ -629,86 +637,42 @@ class ProgressBar:
             self.progress.destroy()
 
 
-    def progress_update(self, file, handcount):
-
-        if not self.parent:
-            #nothing to do
-            return
+    def progress_update(self, filename, handcount):
             
         self.fraction += 1
-        #update sum if fraction exceeds expected total number of iterations
-        if self.fraction > self.sum: 
-            sum = self.fraction
+        #update total if fraction exceeds expected total number of iterations
+        if self.fraction > self.total:
+            self.total = self.fraction
+            self.pbar.setRange(0,self.total)
         
-        #progress bar total set to 1 plus the number of items,to prevent it
-        #reaching 100% prior to processing fully completing
-
-        progress_percent = float(self.fraction) / (float(self.sum) + 1.0)
-        progress_text = (self.title + " " 
-                            + str(self.fraction) + " / " + str(self.sum))
-
-        self.pbar.set_fraction(progress_percent)
-        self.pbar.set_text(progress_text)
+        self.pbar.setValue(self.fraction)
         
-        self.handcount.set_text(_("Database Statistics") + " - " + _("Number of Hands:") + " " + handcount)
+        self.handcount.setText(_("Database Statistics") + " - " + _("Number of Hands:") + " " + handcount)
         
         now = datetime.datetime.now()
         now_formatted = now.strftime("%H:%M:%S")
-        self.progresstext.set_text(now_formatted + " - "+self.title+ " " +file+"\n")
+        self.progresstext.setText(now_formatted + " - " + _("Importing") + " " +filename+"\n")
 
 
-    def __init__(self, sum, parent):
-
-        self.parent = parent
-        if not self.parent:
-            #no parent is passed, assume this is being run from the 
-            #command line, so return immediately
+    def __init__(self, total, parent):
+        if parent is None:
             return
+        QDialog.__init__(self, parent)
         
         self.fraction = 0
-        self.sum = sum
-        self.title = _("Importing")
-            
-        self.progress = gtk.Window(gtk.WINDOW_TOPLEVEL)
-        self.progress.set_size_request(500,150)
+        self.total = total
+        self.setWindowTitle(_("Importing"))
 
-        self.progress.set_resizable(False)
-        self.progress.set_modal(True)
-        self.progress.set_transient_for(self.parent)
-        self.progress.set_decorated(True)
-        self.progress.set_deletable(False)
-        self.progress.set_title(self.title)
-        
-        vbox = gtk.VBox(False, 5)
-        vbox.set_border_width(10)
-        self.progress.add(vbox)
-        vbox.show()
-  
-        align = gtk.Alignment(0, 0, 0, 0)
-        vbox.pack_start(align, False, True, 2)
-        align.show()
+        self.setLayout(QVBoxLayout())
 
-        self.pbar = gtk.ProgressBar()
-        align.add(self.pbar)
-        self.pbar.show()
+        self.pbar = QProgressBar()
+        self.pbar.setRange(0, total)
+        self.layout().addWidget(self.pbar)
 
-        align = gtk.Alignment(0, 0, 0, 0)
-        vbox.pack_start(align, False, True, 2)
-        align.show()
+        self.handcount = QLabel()
+        self.handcount.setWordWrap(True)
+        self.layout().addWidget(self.handcount)
 
-        self.handcount = gtk.Label()
-        align.add(self.handcount)
-        self.handcount.show()
-        
-        align = gtk.Alignment(0, 0, 0, 0)
-        vbox.pack_start(align, False, True, 0)
-        align.show()
-        
-        self.progresstext = gtk.Label()
-        self.progresstext.set_line_wrap(True)
-        self.progresstext.set_selectable(True)
-        align.add(self.progresstext)
-        self.progresstext.show()
-        
-        self.progress.show()
-
+        self.progresstext = QLabel()
+        self.progresstext.setWordWrap(True)
+        self.layout().addWidget(self.progresstext)

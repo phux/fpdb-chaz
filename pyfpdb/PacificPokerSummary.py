@@ -35,15 +35,7 @@ class PacificPokerSummary(TourneySummary):
                                'Holdem' : ('hold','holdem'),
                                 'Omaha' : ('hold','omahahi'),
                           'Omaha Hi/Lo' : ('hold','omahahilo'),
-                              'OmahaHL' : ('hold','omahahilo'),
-                                 'Razz' : ('stud','razz'), 
-                                 'RAZZ' : ('stud','razz'),
-                          '7 Card Stud' : ('stud','studhi'),
-                    '7 Card Stud Hi/Lo' : ('stud','studhilo'),
-                               'Badugi' : ('draw','badugi'),
-              'Triple Draw 2-7 Lowball' : ('draw','27_3draw'),
-              'Single Draw 2-7 Lowball' : ('draw','27_1draw'),
-                          '5 Card Draw' : ('draw','fivedraw')
+                              'OmahaHL' : ('hold','omahahilo')
                }
 
     substitutions = {
@@ -52,7 +44,7 @@ class PacificPokerSummary(TourneySummary):
                            'NUM' : u".,\d\xa0"                     # legal characters in number format
                     }
     
-    re_Identify = re.compile(u'\*{5}\s(Cassava|888poker) Tournament Summary\s\*{5}')
+    re_Identify = re.compile(u'\*{5}\s(Cassava|888poker|888.es) Tournament Summary\s\*{5}')
     
     re_TourneyInfo = re.compile(u"""
                         Tournament\sID:\s(?P<TOURNO>[0-9]+)\s+
@@ -66,14 +58,14 @@ class PacificPokerSummary(TourneySummary):
     
     re_Category = re.compile(u"""
           (?P<LIMIT>No\sLimit|Fix\sLimit|Pot\sLimit)\s
-          (?P<GAME>Holdem|Omaha|OmahaHL|Hold\'em|Omaha\sHi/Lo|OmahaHL|Razz|RAZZ|7\sCard\sStud|7\sCard\sStud\sHi/Lo|Badugi|Triple\sDraw\s2\-7\sLowball|Single\sDraw\s2\-7\sLowball|5\sCard\sDraw)
+          (?P<GAME>Holdem|Omaha|OmahaHL|Hold\'em|Omaha\sHi/Lo|OmahaHL)
                                """ % substitutions ,re.VERBOSE|re.MULTILINE|re.DOTALL)
 
     codepage = ("utf8", "cp1252")
 
     @staticmethod
     def getSplitRe(self, head):
-        re_SplitTourneys = re.compile(u'\*\*\*\*\* (Cassava|888poker) Tournament Summary \*\*\*\*\*')
+        re_SplitTourneys = re.compile(u'\*\*\*\*\* (?:Cassava|888poker|888.es) Tournament Summary \*\*\*\*\*')
         return re_SplitTourneys
 
     def parseSummary(self):

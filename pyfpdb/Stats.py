@@ -58,9 +58,6 @@ import sys
 from decimal import Decimal   # needed by hand_instance in m_ratio
 
 
-#    pyGTK modules
-import pygtk
-import gtk
 import re
 
 #    FreePokerTools modules
@@ -96,7 +93,7 @@ def __stat_override(decimals, stat_vals):
 
 def do_tip(widget, tip):
     _tip = Charset.to_utf8(tip)
-    widget.set_tooltip_text(_tip)
+    widget.setToolTip(_tip)
 
 
 def do_stat(stat_dict, player = 24, stat = 'vpip', hand_instance = None):
@@ -145,7 +142,7 @@ def totalprofit(stat_dict, player):
     
     try:
         stat = float(stat_dict[player]['net']) / 100
-        return (stat, '$%.2f' % stat, 'tp=$%.2f' % stat, 'tot_prof=$%.2f' % stat, str(stat), _('Total Profit'))
+        return (stat/100.0, '$%.2f' % stat, 'tp=$%.2f' % stat, 'tot_prof=$%.2f' % stat, str(stat), _('Total Profit'))
     except:
         return ('0', '$0.00', 'tp=0', 'totalprofit=0', '0', _('Total Profit'))
 
@@ -207,7 +204,7 @@ def m_ratio(stat_dict, player):
     hand_instance=_global_hand_instance
     
     if not hand_instance:
-        return      ((int(stat)),
+        return      ((stat/100.0),
                 '%d'        % (int(stat)),
                 'M=%d'      % (int(stat)),
                 'M=%d'      % (int(stat)),
@@ -259,7 +256,7 @@ def bbstack(stat_dict, player):
     else:
         stat = 0
 
-    return      ((int(stat)),
+    return      ((stat/100.0),
                 '%d'        % (int(stat)),
                 "bb's=%d"      % (int(stat)),
                 "#bb's=%d"      % (int(stat)),
@@ -368,7 +365,7 @@ def profit100(stat_dict, player):
     stat = 0.0
     try:
         stat = float(stat_dict[player]['net'])/float(stat_dict[player]['n'])
-        return (stat,
+        return (stat/100.0,
                 '%.2f'          % (stat),
                 'p=%.2f'        % (stat),
                 'p/100=%.2f'    % (stat),
@@ -390,7 +387,7 @@ def bbper100(stat_dict, player):
     #['bigblind'] is already containing number of hands * table's bigblind (e.g. 401 hands @ 5c BB = 2005)
     try:
         stat = 100.0 * float(stat_dict[player]['net']) / float(stat_dict[player]['bigblind'])
-        return (stat,
+        return (stat/100.0,
                 '%5.3f'         % (stat),
                 'bb100=%5.3f'   % (stat),
                 'bb100=%5.3f'   % (stat),
@@ -412,7 +409,7 @@ def BBper100(stat_dict, player):
     #['bigblind'] is already containing number of hands * table's bigblind (e.g. 401 hands @ 5c BB = 2005)
     try:
         stat = 50 * float(stat_dict[player]['net']) / float(stat_dict[player]['bigblind'])
-        return (stat,
+        return (stat/100.0,
                 '%5.3f'         % (stat),
                 'BB100=%5.3f'   % (stat),
                 'BB100=%5.3f'   % (stat),
@@ -993,7 +990,7 @@ def agg_fact(stat_dict, player):
             stat = float (bet_raise) / float(post_call)
         else:
             stat = float (bet_raise)
-        return (stat,
+        return (stat/100.0,
                 '%2.2f'        % (stat) ,
                 'afa=%2.2f'    % (stat) ,
                 'agg_fa=%2.2f' % (stat) ,
@@ -1016,7 +1013,7 @@ def agg_fact_pct(stat_dict, player):
         if float(post_call + bet_raise) > 0.0:
             stat = float (bet_raise) / float(post_call + bet_raise)
                    
-        return (stat,
+        return (stat/100.0,
                 '%2.2f'        % (stat) ,
                 'afap=%2.2f'    % (stat) ,
                 'agg_fa_pct=%2.2f' % (stat) ,
