@@ -418,7 +418,6 @@ class Stat:
         self.stat_midlocolor = node.getAttribute("stat_midlocolor")
         self.stat_midhicolor = node.getAttribute("stat_midhicolor")
         self.stat_hicolor = node.getAttribute("stat_hicolor")
-        self.stat_min_hands = node.getAttribute("stat_min_hands")
         self.stat_min_situations = node.getAttribute("stat_min_situations")
 
     def __str__(self):
